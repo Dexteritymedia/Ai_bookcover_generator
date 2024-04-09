@@ -1,0 +1,45 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Cover generator page{% endblock title %}
+
+{% block content %}
+<div class="row">
+
+<div class="col-lg-6 mb-3">
+<form method="POST">
+{% csrf_token %}
+	{% if form.errors %}
+	<div class="alert alert-danger">
+			<strong>{{ form.errors}}</strong>
+		</div>
+	{% endif %}
+	{% for field in form %}
+		<div class="form-group mb-3">
+		<label class="control-label">{{ field.label_tag }}</label>
+		<div class="col-sm-9">
+			{{ field }}
+		</div>
+  </div>
+	{% endfor %}
+
+<button type="submit" class="btn btn-success btn-flat" name="submit">Generate</button>
+
+</form>
+</div>
+
+{% if cover %}
+
+<div class="col-lg-6 text-center">
+	<img src="{{ cover }}" class="img-fluid">
+	<a class="btn btn-success mt-3" href="/{{ download_link }}" download>Download</a>
+	<a class="btn btn-danger mt-3" href="{% url 'cover-page' user.username %}">Go to Profile</a>
+</div>
+{% else %}
+<div class="col-lg-6">
+	<img src="{% static 'images/Image-Placeholder.png' %}" class="img-fluid">
+</div>
+{% endif %}
+</div>
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+
+<form method="POST">
+	{% csrf_token %}
+	{% if request.GET.next %}
+		<input type="hidden" name="next" value="{{ request.GET.next }}">
+	{% endif %}
+	
+	<div class="form-group mb-3">
+		<label class="col-sm-3 control-label">Username</label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" name="username">
+		</div>
+  </div>
+  <div class="form-group mb-3">
+	  <label class="col-sm-3 control-label">Password</label>
+
+	  <div class="col-sm-9">
+		<input type="password" class="form-control" name="password">
+	  </div>
+  </div>
+  <div class="form-group mb-3">
+	<button type="submit" class="btn btn-primary btn-flat" name="submit">Log In</button>
+	<p style="text-aligin-center">Don't have an account?<a href="{% url 'signup' %}"> Signup</a></p>
+	</div>
+
+</form>
+<a href="{% url 'password_reset' %}">Reset Password</a>
+
+{% endblock content %}

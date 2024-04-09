@@ -1,0 +1,10 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+	<div class="row text-align">
+		<div class="col-12">
+			<h3>Payment successful</h3>
+			<a class="btn btn-info mt-5" href="{% url 'cover-generator-page' %}">Start generating covers</a>
+		</div>
+	</div>
+{% endblock content %}

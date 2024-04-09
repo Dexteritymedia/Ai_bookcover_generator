@@ -1,0 +1,77 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+	<div class="row align-center justify-content-center">
+		<div class="col-lg-4 col-md-6" data-wow-delay="0.1s">
+			<div class="service-item d-flex flex-column justify-content-center text-center rounded">
+				<h1 class="mb-3">${{ amount }}</h1>
+				<p>Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+				<div id="payment-failed">
+  Uh-oh. Please try again, or contact support if you're encountering difficulties making payment.
+</div>
+<br>
+  <button type="button" class="start-payment-button" onclick="makePayment()">Pay Now</button>
+<div id="payment-success">
+  Thank you! Enjoy your awesome cruise.🚢
+</div>
+<div id="payment-pending">
+  Verifying...Setting up your cruise🚢
+</div>
+            </div>
+        </div>
+   </div>             
+<!--public_key: "FLWPUBK_TEST-7ea216af6f9ae9be8cbb5553bf47f0d8-X"-->
+{% endblock content %}
+
+{% block js %}
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script>
+  function makePayment() {
+    FlutterwaveCheckout({
+      
+      public_key: "FLWPUBK_TEST-02b9b5fc6406bd4a41c3ff141cc45e93-X",
+      tx_ref: "titanic-48981487343MDI0NzMx",
+      amount: {{ amount }},
+      currency: "USD",
+      payment_options: "card, mobilemoneyghana, ussd",
+      callback: function(payment) {
+        // Send AJAX verification request to backend
+        verifyTransactionOnBackend(payment.id);
+      },
+      onclose: function(incomplete) {
+        if (incomplete || window.verified === false) {
+          document.querySelector("#payment-failed").style.display = 'block';
+        } else {
+          document.querySelector("form").style.display = 'none';
+          if (window.verified == true) {
+            document.querySelector("#payment-success").style.display = 'block';
+          } else {
+            document.querySelector("#payment-pending").style.display = 'block';
+          }
+        }
+      },
+      meta: {
+        consumer_id: 23,
+        consumer_mac: "92a3-912ba-1192a",
+      },
+      customer: {
+        email: "rose@unsinkableship.com",
+        phone_number: "08102909304",
+        name: "Rose DeWitt Bukater",
+      },
+      customizations: {
+        title: "Kindle AI Cover Creator",
+        description: "Payment for an awesome cruise",
+        logo: "https://www.logolynx.com/images/logolynx/22/2239ca38f5505fbfce7e55bbc0604386.jpeg",
+      },
+    });
+  }
+
+  function verifyTransactionOnBackend(transactionId) {
+    // Let's just pretend the request was successful
+    setTimeout(function() {
+      window.verified = true;
+    }, 200);
+  }
+</script>
+{% endblock js %}

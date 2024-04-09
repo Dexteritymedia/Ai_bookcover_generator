@@ -1,0 +1,18 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="row">
+	<textarea rows="4" class="form-control mb-3" name="prompt" readonly>{{ content.prompt }}</textarea>
+	<div class="col-3">
+		<img src="{{ content.cover_url }}" class="img-fluid">
+	</div>
+	<div class="col-8">
+	</div>
+	<div class="col-sm-12 text-center">
+		<a class="btn btn-success mt-5" href="{{ content.cover_url }}" download>Download</a>
+		 <a class="btn btn-primary mt-5" href="{% url 'resize-cover-page-done' user.username content.slug %}">Resize</a>
+     </div>
+	
+	
+</div>
+{% endblock content %}

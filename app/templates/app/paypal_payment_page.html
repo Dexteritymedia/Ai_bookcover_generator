@@ -1,0 +1,117 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+{% comment %}
+	<div class="row align-center justify-content-center">
+		<div class="col-lg-4 col-md-6" data-wow-delay="0.1s">
+			<div class="service-item d-flex flex-column justify-content-center text-center rounded">
+				<h1 class="mb-3">${{ amount }}</h1>
+				<p>Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+				<div id="payment-failed">Uh-oh. Please try again, or contact support if you're encountering difficulties making payment.</div>
+				<br>
+				<button type="button" class="btn btn-success" id="paypal-button-container">Pay Now</button>
+				<div ></div>
+				<div id="smart-button-container">
+          <div style="text-align: center;">
+            <div id="paypal-button-container"></div>
+          </div>
+        </div>
+            </div>
+        </div>
+   </div>  
+{% endcomment %} 
+  
+<div class="row">
+{% for plan in payment_plans %}
+
+		<div class="col-lg-4 col-md-6" data-wow-delay="0.1s">
+			<div class="service-item d-flex flex-column justify-content-center text-center rounded">
+				<h1 class="mb-3">${{ plan.amount }}</h1>
+				<h4 class="mb-3">{{ plan.credit }}/{{ plan.plan|title }}</h4>
+				<p>Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+				<br>
+				<button type="submit" class="btn btn-success payment-plan" data-id= "{{ plan.id }}" data-plan="{{ plan.plan }}" data-amount="{{ plan.amount }}">Pay Now</button>
+				<div ></div>
+				<div id="smart-button-container">
+          <div style="text-align: center;">
+            <div id="paypal-button-container"></div>
+          </div>
+        </div>
+            </div>
+        </div>
+
+{% endfor %}    
+ </div> 
+<!--public_key: "FLWPUBK_TEST-7ea216af6f9ae9be8cbb5553bf47f0d8-X"-->
+{% endblock content %}
+
+{% block js %}
+<!--<script src="https://www.paypal.com/sdk/js?client-id=paste_client_id_here&currency=USD"></script>-->
+<script src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=USD"></script>
+<script>
+	console.log('Hello')
+	var user = '{{ request.user.username }}'
+	console.log(user)
+	var paymentPlan = document.getElementsByClassName('payment-plan')
+	
+	for(var i = 0; i < paymentPlan.length; i++){
+		paymentPlan[i].addEventListener('click', function(){
+			var paymentId = this.dataset.id
+			var plan = this.dataset.plan
+			var amount = this.dataset.amount
+			console.log('paymentId:', paymentId, 'amount:', amount, 'plan:', plan)
+			//paypalPayment(amount)
+			submitData(paymentId, amount);
+		}
+		)
+	}
+	
+	function paypalPayment(amount){
+		paypal.Buttons({
+			style:{
+				color: 'blue',
+				shape: 'rect',
+			},
+		
+			createOrder: function(data, actions) {
+				return actions.order.create({
+					purchase_units: [{
+						amount: {
+							value: parseFloat(amount).toFixed(2)
+						}
+					}]
+				});
+			},
+		
+			onApprove: function(data, actions) {
+				return actions.order.capture().then(function(details) {
+					submitFormData(paymentId, amount)
+					});
+				}
+			
+			}).render('#paypal-button-container');
+		}
+	
+	function submitData(paymentId, amount){
+		var url = '/confirm-payment/'+paymentId+'/'
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type':'application/json',
+				'X-CSRFToken':csrftoken,
+			},
+			body: JSON.stringify({'paymentId':paymentId, 'amount':amount})
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			console.log('Success:', data);
+			alert('Transaction completed');
+			window.location.href = '{% url 'confirmation-page' %}'
+			
+		})
+	}
+	
+			
+		
+</script>
+{% endblock js %}

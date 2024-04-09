@@ -1,0 +1,25 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on 127.0.0.1:8000
+From: webmaster@localhost
+To: posi@gmail.com
+Date: Wed, 20 Mar 2024 21:58:53 -0000
+Message-ID: <171097193358.4604.14614985914606494782@alibay>
+
+
+You're receiving this email because you requested a password reset for your user account at 127.0.0.1:8000.
+
+Please go to the following page and choose a new password:
+
+http://127.0.0.1:8000/accounts/password-reset-confirm/MQ/c47jq5-6d320c5c00200647e5758f80cba0f5cd/
+
+Your username, in case you’ve forgotten: posi
+
+Thanks for using our site!
+
+The 127.0.0.1:8000 team
+
+
+
+-------------------------------------------------------------------------------

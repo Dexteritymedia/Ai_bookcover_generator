@@ -1,0 +1,40 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-4">
+			<h1>{{user.username|title}}</h1>
+			<a href="{% url 'update-profile' %}">Update profile</a>
+		</div>
+		<div class="col-4">
+			<h1>{{user.user_credits}}</h1>
+		</div>
+		<div class="col-4">
+			<a href="{% url 'cover-generator-page' %}" class="btn btn-success btn-flat">Generate Cover</a>
+		</div>
+	</div>
+	
+	<div class="row">
+	{% if contents %}
+	<div class="row row-cols-1 row-cols-md-2 g-4">
+		{% for content in contents %}
+		<div class="col-6 text-center my-auto mb-3">
+			<div class="card bg-dark text-white">
+				<a href="{% url 'resize-cover-page' content.slug content.id %}">
+				<img src="{{ content.cover_url}}" class="card-img" alt="...">
+					<div class="card-img-overlay align-items-center d-flex justify-content-center">
+						<p class="card-text">{{ content.prompt }}p>
+					</div>
+				</a>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div class="row align-center justify-content-center">
+		<h4>You do not have any covers at the moment</h4>
+		<a href="{% url 'cover-generator-page' %}" class="btn btn-success">Generate Cover</a>
+	</div>
+	{% endif %}
+	</div>
+{% endblock content %}
