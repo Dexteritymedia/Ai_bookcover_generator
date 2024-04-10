@@ -1,0 +1,31 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="formContainer">
+<form method="POST" enctype="multipart/form-data">
+	{% csrf_token %}
+{% for field in u_form %}
+	<div class="form-group mb-3">
+	<label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+		{{ field }}
+	</div>
+{% endfor %}
+	<div class="form-group mb-3">
+		{{ p_form }}
+	</div>
+	<button type="submit" class="btn btn-success">Update profile</button>
+</form>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+let form_container = document.querySelector(".formContainer")
+let inputs = form_container.querySelectorAll("input")
+console.log(inputs)
+
+for(let input of inputs){
+	input.classList.add("form-control")
+}
+</script>
+{% endblock js %}

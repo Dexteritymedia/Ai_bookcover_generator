@@ -3,6 +3,7 @@
 {% block content %}
 	<div class="row">
 		<div class="col-4">
+			<img src="{{ profile.image.url }}" alt="{{user.username}}" width="100px" height="100px" class="img-fluid rounded-circle">
 			<h1>{{user.username|title}}</h1>
 			<a href="{% url 'update-profile' %}">Update profile</a>
 		</div>

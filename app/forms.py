@@ -1,10 +1,11 @@
 from django import forms
+from django.forms.models import modelformset_factory
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
-from .models import CustomerPayment, CoverGenerator, Profile
+from .models import CustomerPayment, CoverGenerator, Profile, ImageEditing
 
 User = get_user_model()
 
@@ -41,5 +42,15 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image']
+
+
+class ImageEditingForm(forms.ModelForm):
+    color = forms.CharField(label="Pick a color",widget=forms.TextInput(attrs={"type":"colr"}))
+    class Meta:
+        model = ImageEditing
+        fields = ['font', 'x', 'y', 'size', 'color', 'name']
+
+
+ImageEditingFormSet = modelformset_factory(ImageEditing, form=ImageEditingForm, extra=3)
     
 

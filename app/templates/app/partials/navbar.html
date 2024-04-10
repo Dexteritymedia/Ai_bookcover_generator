@@ -22,7 +22,7 @@
                         </div>
 						{% get_amount %}
                     </div>
-					<a href="{% url 'cover-generator-page' %}" class="btn btn-success text-light rounded-pill py-2 px-4 ms-3">Generate Cover</a>
+					<a href="{% url 'cover-generator-page' %}" class=" nav-item nav-link btn btn-success text-light rounded-pill py-2 px-4 ms-3">Generate Cover</a>
 					{% if user.is_authenticated %}
 						<a href="{% url 'logout' %}" class="nav-item nav-link" style="color: red;">Logout</a>
 					{% else %}

@@ -11,7 +11,12 @@ from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.safestring import mark_safe
 
-from .forms import UserRegisterForm, CoverGeneratorForm, UserUpdateForm, ProfileUpdateForm
+from PIL import Image, ImageDraw, ImageFont
+
+from .forms import (
+    UserRegisterForm, CoverGeneratorForm,
+    UserUpdateForm, ProfileUpdateForm, ImageEditingForm
+)
 from .models import *
 from .utils import generate_cover, generate_transaction_id, resize_cover
 
@@ -71,7 +76,7 @@ def update_profile(request):
     if request.method == "POST":
         
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
@@ -79,7 +84,7 @@ def update_profile(request):
             return redirect('cover-page', request.user.username)
     else:
         u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(request.FILES, instance=request.user)
+        p_form = ProfileUpdateForm(request.FILES, instance=request.user.profile)
     context = {
         'u_form': u_form,
         'p_form': p_form,
@@ -252,10 +257,13 @@ def cover_generator(request):
 @login_required(login_url="login")
 def cover_page(request, username):
     user = get_object_or_404(User, username=username)
+    #profile = Profile.objects.get(user=user)
+    #profile = user.profile_set.all() #reverse on ForeignKey
+    profile = user.profile #reverse on OneToOne
     if user != request.user:
         raise Http404
     page = CoverGenerator.objects.filter(user=user).all().order_by('-date')
-    return render(request, 'app/user_cover_page.html', {'user':user, 'contents':page})
+    return render(request, 'app/user_cover_page.html', {'user':user, 'profile':profile, 'contents':page})
 
 
 @login_required(login_url="login")
@@ -297,4 +305,55 @@ def resize_cover_page_done(request, slug, username):
         messages.success(request, "Cover Resized!")
         return redirect('cover-page', user.username)
     return render(request, 'app/resize_cover_page_done.html', {'content':page, 'user':user})
+
+
+@login_required(login_url="login")
+def image_manipulation(request, image):
+    cover = CoverGenerator.objects.get(slug=image)
+    form = ImageEditingForm()
+    return render(request, "app/cover_edit.html", {'form': form, 'cover': cover})
+    """
+    if request.method == "POST":
+        form = forms.ImageEditingForm(request.POST)
+        cover = CoverGenerator.objects.get(id=image)
+        if form.is_valid():
+            name = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
+                           for _ in range(10))
+            image = Image.open('media/'+str(cover.cover))
+
+            draw = ImageDraw.Draw(image)
+
+            aux_font = 'static/fonts/'+str(pic.font)+'.ttf'
+            # print(aux_font)
+
+            font = ImageFont.truetype(
+                aux_font, size=cover.size)
+
+            print(font)
+
+            (x, y) = (cover.x, cover.y)
+
+            message = form.cleaned_data['name']
+
+            # color = 'rgb(0, 0, 0)'  # black color
+
+            draw.text((x, y), message, fill=cover.color, font=font)
+            image.save('media/generated/'+name+'.jpg')
+            print(name)
+
+        form = forms.GenerateForm()
+        src = 'media/generated/'+name
+        # return reverse('generate', kwargs={'pic': name})
+        return HttpResponseRedirect(reverse('generate', kwargs={'pic': name}))
+
+    else:
+        cover = CoverGenerator.objects.get(id=image)
+        form = forms.ImageEditingForm()
+        return render(request, "app/cover_edit.html", {'form': form, 'cover': cover})
+    """
+
+
+def generate(request, pic):
+    pic = '/media/generated/'+pic+'.jpg'
+    return render(request, "generated.html", {'src': pic})
     

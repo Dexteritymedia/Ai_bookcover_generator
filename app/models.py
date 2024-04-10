@@ -49,7 +49,7 @@ class HomePage(models.Model):
 
         
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
 
     def __str__(self):
@@ -70,7 +70,7 @@ class Payment(models.Model):
         ('Standard', 'Standard'),
         ('Premium', 'Premium'),
     )
-    amount = models.PositiveIntegerField()
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
     date_added = models.DateTimeField(auto_now=True)
     plan = models.CharField(max_length=100, choices=PLAN, null=True, blank=True)
     description = models.TextField(blank=True)
@@ -121,6 +121,43 @@ class CoverGenerator(models.Model):
 
     def get_absolute_url(self):
         return reverse("cover-generator", kwargs={"slug": self.slug})
+
+
+class ImageEditing(models.Model):
+
+    ROBOTO = 'Roboto'
+    ZCOOL = 'ZCOOL'
+    FONT_CHOICES = (
+        (ROBOTO, 'Roboto'),
+        (ZCOOL, 'ZCOOL'),
+    )
+
+    name = models.CharField(max_length=100)
+    cover = models.ImageField(upload_to='images-edit/')
+    blank = models.ImageField(upload_to='images-edits/blanks/')
+
+    image = models.ForeignKey(
+        CoverGenerator,
+        related_name='images',
+        on_delete=models.DO_NOTHING,
+    )
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
+
+    font = models.CharField(
+        max_length=100,
+        choices=FONT_CHOICES,
+        default=ROBOTO,
+    )
+
+    size = models.IntegerField(default=10)
+    color = models.CharField(max_length=100)
+
+    alt_text = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
         
     
 

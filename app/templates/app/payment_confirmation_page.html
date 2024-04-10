@@ -2,9 +2,15 @@
 
 {% block content %}
 	<div class="row text-align">
-		<div class="col-12">
-			<h3>Payment successful</h3>
-			<a class="btn btn-info mt-5" href="{% url 'cover-generator-page' %}">Start generating covers</a>
+		<div class="col-12 text-center">
+			<div class="card" style="max-width: 18rem;">
+				
+				<div class="card-body">
+					<i class="fas fa-check-circle fa-5x" style="color: green;"></i>
+					<h3 class="card-text">Payment successful</h3>
+					<a class="btn btn-info mt-3" href="{% url 'cover-generator-page' %}">Start generating covers</a>
+				</div>
+			</div>	
 		</div>
 	</div>
 {% endblock content %}

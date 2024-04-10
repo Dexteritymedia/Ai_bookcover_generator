@@ -29,7 +29,7 @@ environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
 ADMIN_URL = env('ADMIN_URL')
 
 urlpatterns = [
-    path(ADMIN_URL, admin.site.urls),
+    path(f'{ADMIN_URL}/', admin.site.urls),
     path('', include('app.urls')),
     #path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/password-reset/', auth_views.PasswordResetView.as_view(
