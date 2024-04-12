@@ -44,6 +44,23 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['image']
 
 
+class ImageManipulationForm(forms.Form):
+    FONT_CHOICES = (
+        ('Roboto', 'Roboto'),
+        ('ZCOOL', 'ZCOOL'),
+    )
+    font_type = forms.ChoiceField(choices = FONT_CHOICES)
+    font_size = forms.IntegerField(label=" Font Size",widget=forms.NumberInput(attrs={"class":"form-control"}))
+    color = forms.CharField(label=" Color",widget=forms.TextInput(attrs={"type": "color", "class":"form-control"}))
+    text = forms.CharField(label="Text",widget=forms.TextInput(attrs={"class":"form-control"}))
+    x_axis = forms.IntegerField(widget=forms.NumberInput(attrs={'type':'range', 'step': '5', 'min': '-100', 'max': '100', 'id':'x_axis'}), required=False)
+    y_axis = forms.IntegerField(widget=forms.NumberInput(attrs={'type':'range', 'step': '5', 'min': '-100', 'max': '100', 'id':'y_axis'}), required=False)
+
+    class Meta:
+        fields = ['font_type', 'font_size', 'color', 'text', 'x_axis', 'y_axis']
+
+
+
 class ImageEditingForm(forms.ModelForm):
     color = forms.CharField(label="Pick a color",widget=forms.TextInput(attrs={"type":"colr"}))
     class Meta:

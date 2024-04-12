@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
 	
-    <title>{% block title %}{% endblock title %}-</title>
+    <title>{% block title %}{% endblock title %}- KindleCoverFactory</title>
 	
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
@@ -50,7 +50,7 @@
 		
 	
 		
-	<div class="container my-5 py-5 px-lg-5">
+	<div class="container py-5 px-lg-5">
 	
 		{% if messages %}
 			{% for message in messages %}
@@ -78,7 +78,7 @@
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6 text-center mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="/"></a>, All Right Reserved. 
+                            &copy; KindleCoverFactory<a class="border-bottom" href="/"></a>, {% now 'Y' %} All Right Reserved. 
                         </div>
 					</div>
 				</div>
@@ -103,6 +103,7 @@
 	}
 	const csrftoken = getCookie('csrftoken');
 	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/seo/js/wow.min.js' %}"></script>

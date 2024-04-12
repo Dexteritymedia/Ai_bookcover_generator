@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
+    path('index/', views.index, name='index'),
     path('register/', views.signup, name='signup'),
     path('login/', views.login_page, name='login'),
     path('logout/', views.logout_page, name='logout'),
@@ -15,7 +16,7 @@ urlpatterns = [
     path('resize/<slug>/<id>', views.cover_detail_page, name='resize-cover-page'),
     path('<username>/resize/<slug>/done/', views.resize_cover_page_done, name='resize-cover-page-done'),
     path('cover-generator/', views.cover_generator, name='cover-generator-page'),
-    path('edit-cover/<slug>/', views.image_manipulation, name='image-editing-page'),
+    path('image-edit/<slug>/<id>', views.image_manipulation_page, name='image-manipulation-page'),
 ]
 
 

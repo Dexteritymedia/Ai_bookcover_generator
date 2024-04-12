@@ -19,7 +19,7 @@ class HomePage(models.Model):
     cover_num = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     def book_cover_img(self):
         if self.book_cover:
@@ -30,22 +30,20 @@ class HomePage(models.Model):
 
     def save(self, *args, **kwargs):
         import urllib, os
-        #from urlparse import urlparse
-
-        file_save_dir = 'home'
-        print(file_save_dir)
+        
         url = 'https://replicate.delivery/mgxm/59d9390c-b415-47e0-a907-f81b0d9920f1/187400315-87a90ac9-d231-45d6-b377-38702bd1838f.jpg'
-        #filename = urlparse(url).path.split('/')[-1]
-        #result = urllib.request.urlretrieve(url)
-        #self.book_cover = os.path.join('home', filename)
-        #File(open(result[0], 'rb'))
-        #result = urllib.urlretrieve(url, os.path.join(file_save_dir))
-        #self.book_cover = os.path.join(file_save_dir, File(open(result[0], 'rb')))
         result = urllib.request.urlretrieve(url)
-        print(result)
-        self.book_cover.save(os.path.basename(url), File(open(result[0], 'rb')))
-        #self.save()
+        self.book_cover.save(os.path.basename(url), File(open(result[0], 'rb')), save=False)
         super(HomePage, self).save(*args, **kwargs)
+
+
+class FAQ(models.Model):
+    question = models.TextField()
+    answer = models.TextField()
+    question_no = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.id)
 
         
 class Profile(models.Model):
@@ -63,6 +61,11 @@ class Profile(models.Model):
             img.thumbnail(output_size)
         img.save(self.image.path)
     
+class PaymentFeature(models.Model):
+    feature = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.feature
 
 class Payment(models.Model):
     PLAN = (
@@ -75,10 +78,10 @@ class Payment(models.Model):
     plan = models.CharField(max_length=100, choices=PLAN, null=True, blank=True)
     description = models.TextField(blank=True)
     credit = models.PositiveIntegerField(default=25)
+    feature = models.ForeignKey(PaymentFeature, default=None, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_features")
 
     def __str__(self):
         return str(self.plan)
-
 
 class CustomerPayment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)

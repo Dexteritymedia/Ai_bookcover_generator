@@ -1,5 +1,9 @@
+import os
 import json
+from io import BytesIO
+import urllib
 
+from django.core.files import File
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login, authenticate
 from django.contrib import messages
@@ -7,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.safestring import mark_safe
 
@@ -15,7 +19,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 from .forms import (
     UserRegisterForm, CoverGeneratorForm,
-    UserUpdateForm, ProfileUpdateForm, ImageEditingForm
+    UserUpdateForm, ProfileUpdateForm, ImageEditingForm,
+    ImageManipulationForm,
 )
 from .models import *
 from .utils import generate_cover, generate_transaction_id, resize_cover
@@ -28,6 +33,19 @@ User = get_user_model()
 def homepage(request):
     context = {}
     return render(request, 'app/seo/index.html', context)
+   
+def index(request):    
+    post_obj = HomePage.objects.all()[0:5]    
+    total_obj = HomePage.objects.count()       
+    return render(request, 'app/home_page.html', context={'posts': post_obj, 'total_obj': total_obj})
+
+def load_more(request):    
+    loaded_item = request.GET.get('loaded_item')    
+    loaded_item_int = int(offset)    
+    limit = 2    
+    post_obj = list(HomePage.objects.values() [loaded_item_int:loaded_item_int+limit])    
+    data = {'posts': post_obj}    
+    return JsonResponse(data=data)
 
 def signup(request):
     if request.method == 'POST':
@@ -230,24 +248,29 @@ def cover_generator(request):
                 print(download_link)
                 if cover:
                     request.session['cover'] = cover
+                    result = urllib.request.urlretrieve(request.session['cover'])
+                    open_result = open(result[0], 'rb')
+                    result_file = File(open_result)
+                    user_cover = CoverGenerator.objects.create(user=user, prompt=prompt)
+                    user_cover.cover.save('bookcover_'+str(user_cover.id)+'.jpg', result_file, save=True)
+
+                    user_cover.save()
+                    user.user_credits -= 1
+
+                    user.save()
+                    context = {}
+                    context['form'] = form
+                    context['download_link'] = download_link
+                    context['cover'] = request.session['cover']
+                    context['prompt'] = request.session['prompt']
+                    context['user_cover'] = user_cover
+                    return render(request, 'app/cover_generator_page.html', context)
                 else:
                     messages.error(request, 'Oops we could not generate')
+                    return redirect('cover-generator-page')
 
-                user_cover = CoverGenerator.objects.create(user=user, prompt=prompt)
                 
-                user_cover.save()
-                user.user_credits -= 1
-
-                user.save()
-
-                context = {}
-                context['form'] = form
-                context['download_link'] = download_link
-                context['cover'] = request.session['cover']
-                context['prompt'] = request.session['prompt']
-                return render(request, 'app/cover_generator_page.html', context)
         else:
-            #return render(request, 'app/blank.html', {'form':form})
             messages.warning(request, mark_safe('You are out of credit. Make <a href="/payment/" target="_blank">Payment</a>'))
     else:
         form = CoverGeneratorForm()
@@ -259,9 +282,12 @@ def cover_page(request, username):
     user = get_object_or_404(User, username=username)
     #profile = Profile.objects.get(user=user)
     #profile = user.profile_set.all() #reverse on ForeignKey
-    profile = user.profile #reverse on OneToOne
+    try:
+        profile = user.profile #reverse on OneToOne
+    except:
+        pass
     if user != request.user:
-        raise Http404
+        return HttpResponseForbidden()
     page = CoverGenerator.objects.filter(user=user).all().order_by('-date')
     return render(request, 'app/user_cover_page.html', {'user':user, 'profile':profile, 'contents':page})
 
@@ -270,7 +296,7 @@ def cover_page(request, username):
 def cover_detail_page(request, slug, id):
     page = CoverGenerator.objects.get(slug=slug, id=id)
     if page.user != request.user:
-        raise Http404
+        return HttpResponseForbidden()
     return render(request, 'app/resize_cover_page.html', {'content':page})
 
 @login_required(login_url="login")
@@ -308,52 +334,37 @@ def resize_cover_page_done(request, slug, username):
 
 
 @login_required(login_url="login")
-def image_manipulation(request, image):
-    cover = CoverGenerator.objects.get(slug=image)
-    form = ImageEditingForm()
-    return render(request, "app/cover_edit.html", {'form': form, 'cover': cover})
-    """
+def image_manipulation_page(request, slug, id):
+    page = CoverGenerator.objects.get(slug=slug, id=id)
+    user = User.objects.get(username=request.user.username)
     if request.method == "POST":
-        form = forms.ImageEditingForm(request.POST)
-        cover = CoverGenerator.objects.get(id=image)
+        form = ImageManipulationForm(request.POST)
         if form.is_valid():
-            name = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
-                           for _ in range(10))
-            image = Image.open('media/'+str(cover.cover))
+            font_type = form.cleaned_data['font_type']
+            size = form.cleaned_data['font_size']
+            text = form.cleaned_data['text']
+            color = form.cleaned_data['color']
+            x_axis = form.cleaned_data['x_axis']
+            y_axis = form.cleaned_data['y_axis']
 
+            image = Image.open(str(page.cover.path))
             draw = ImageDraw.Draw(image)
+            
+            font_dir = os.path.join(settings.BASE_DIR, 'static/fonts/'+str(font_type)+'.ttf')
 
-            aux_font = 'static/fonts/'+str(pic.font)+'.ttf'
-            # print(aux_font)
+            font = ImageFont.truetype(font_dir, size=int(size))
 
-            font = ImageFont.truetype(
-                aux_font, size=cover.size)
-
-            print(font)
-
-            (x, y) = (cover.x, cover.y)
-
-            message = form.cleaned_data['name']
-
-            # color = 'rgb(0, 0, 0)'  # black color
-
-            draw.text((x, y), message, fill=cover.color, font=font)
-            image.save('media/generated/'+name+'.jpg')
-            print(name)
-
-        form = forms.GenerateForm()
-        src = 'media/generated/'+name
-        # return reverse('generate', kwargs={'pic': name})
-        return HttpResponseRedirect(reverse('generate', kwargs={'pic': name}))
-
+            (x, y) = (x_axis, y_axis)
+            draw.text((x, y), text, fill=color, font=font)
+            
+            bytes_io = BytesIO()
+            image.save(bytes_io, 'JPEG')
+            page.resized_cover.save(text+'.jpg', File(bytes_io), save=True)
+            #page.save()
+        messages.success(request, "Image Edited!")
+        return redirect('cover-page', user.username)
     else:
-        cover = CoverGenerator.objects.get(id=image)
-        form = forms.ImageEditingForm()
-        return render(request, "app/cover_edit.html", {'form': form, 'cover': cover})
-    """
+        form = ImageManipulationForm()
+    return render(request, 'app/image_manipulation_page.html', {'form': form, 'content':page})
 
-
-def generate(request, pic):
-    pic = '/media/generated/'+pic+'.jpg'
-    return render(request, "generated.html", {'src': pic})
     

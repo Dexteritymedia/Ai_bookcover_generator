@@ -22,10 +22,7 @@
 		<div class="col-6 text-center my-auto mb-3">
 			<div class="card bg-dark text-white">
 				<a href="{% url 'resize-cover-page' content.slug content.id %}">
-				<img src="{{ content.cover_url}}" class="card-img" alt="...">
-					<div class="card-img-overlay align-items-center d-flex justify-content-center">
-						<p class="card-text">{{ content.prompt }}p>
-					</div>
+				<img src="{{ content.cover_url}}" class="card-img" alt="{{ content.cover.alt }}">
 				</a>
 			</div>
 		</div>

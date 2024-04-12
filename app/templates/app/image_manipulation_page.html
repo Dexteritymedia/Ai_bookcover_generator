@@ -1,0 +1,22 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="row">
+	<div class="col-6">
+		<img src="{{ content.cover_url }}" class="img-fluid">
+	</div>
+	<div class="col-6">
+	    <form method="POST">
+			{% csrf_token %}
+				{% for field in form %}
+					<div class="form-group mb-3">
+						<label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+						{{ field }}
+					</div>
+				{% endfor %}
+	           <button type="submit" class="btn btn-success"> Edit</button>
+	   </form>
+	</div>
+</div>
+{% endblock %}
+
