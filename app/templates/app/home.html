@@ -1,0 +1,26 @@
+{% extends 'app/base.html' %}
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+<div id="articles">
+    <div class="row">
+{% for article in page_obj %}
+
+	<div class="col-6 article">
+        <h2>{{ article.prompt }}</h2>
+            <img class="img-fluid" src="{{ article.book_cover.url }}" alt="A sample image"/>
+</div>
+
+<div class="centralize-div py-5" id="load-more">
+        {% if page_obj.has_next and forloop.last %}
+        <button class="btn btn-primary" hx-get="{% url 'home' %}?page={{ page_obj.next_page_number }}"
+              hx-target="#load-more" hx-select=".article" hx-swap="outerHTML"
+              hx-trigger="load delay:3s">Load more</button>
+     {% endif %}
+ </div
+ {% endfor %}
+</div>
+</div>
+
+{% endblock content %}

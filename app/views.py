@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.safestring import mark_safe
+from django.core.paginator import Paginator
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -33,19 +34,17 @@ User = get_user_model()
 def homepage(request):
     context = {}
     return render(request, 'app/seo/index.html', context)
-   
-def index(request):    
-    post_obj = HomePage.objects.all()[0:5]    
-    total_obj = HomePage.objects.count()       
-    return render(request, 'app/home_page.html', context={'posts': post_obj, 'total_obj': total_obj})
 
-def load_more(request):    
-    loaded_item = request.GET.get('loaded_item')    
-    loaded_item_int = int(offset)    
-    limit = 2    
-    post_obj = list(HomePage.objects.values() [loaded_item_int:loaded_item_int+limit])    
-    data = {'posts': post_obj}    
-    return JsonResponse(data=data)
+def home(request):
+
+    """
+    Fetch paginated articles and render them.
+    """
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(HomePage.objects.all(), 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'app/home.html', {'page_obj': page_obj})
 
 def signup(request):
     if request.method == 'POST':
@@ -110,7 +109,8 @@ def update_profile(request):
     return render(request, 'app/update_profile.html', context)
 
 def payment_page(request):
-    payment_plans = payment = Payment.objects.all()[:3]
+    payment_plans = Payment.objects.all()[:3]
+    #print(payment_plans.payment_set.all())
     print(request.user.username)
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
@@ -125,7 +125,7 @@ def confirm_payment(request, pk):
     print(payment.credit)
     data = json.loads(request.body)
     print(data['amount'])
-    amount = int(data['amount'])
+    amount = float(data['amount'])
     print(amount)
 
     if request.user.is_authenticated:
@@ -133,9 +133,8 @@ def confirm_payment(request, pk):
         user_payment = CustomerPayment.objects.create(user=user, amount=payment)
     else:
         messages.warning(request, "You are not signed in Please log in!")
-        return JsonResponse('You can', safe=False)
 
-    if amount == int(payment.amount):
+    if amount == float(payment.amount):
         transaction_id = generate_transaction_id()
         print(transaction_id)
         user_payment.transaction_id = f"TRA-{request.user.username}-{transaction_id}"
@@ -282,14 +281,14 @@ def cover_page(request, username):
     user = get_object_or_404(User, username=username)
     #profile = Profile.objects.get(user=user)
     #profile = user.profile_set.all() #reverse on ForeignKey
-    try:
-        profile = user.profile #reverse on OneToOne
-    except:
-        pass
     if user != request.user:
         return HttpResponseForbidden()
     page = CoverGenerator.objects.filter(user=user).all().order_by('-date')
-    return render(request, 'app/user_cover_page.html', {'user':user, 'profile':profile, 'contents':page})
+    try:
+        profile = user.profile #reverse on OneToOne
+        return render(request, 'app/user_cover_page.html', {'user':user, 'profile':profile, 'contents':page})
+    except:
+        return render(request, 'app/user_cover_page.html', {'user':user, 'contents':page})
 
 
 @login_required(login_url="login")

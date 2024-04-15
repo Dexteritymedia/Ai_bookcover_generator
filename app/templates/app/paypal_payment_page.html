@@ -28,6 +28,7 @@
 			<div class="service-item d-flex flex-column justify-content-center text-center rounded">
 				<h1 class="mb-3">${{ plan.amount|floatformat:2 }}</h1>
 				<h4 class="mb-3">{{ plan.credit }}/{{ plan.plan|title }}</h4>
+				{{ plan.paymentfeature_set.all }}
 				<p>Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
 				<br>
 				<button type="submit" class="btn btn-success payment-plan" data-id= "{{ plan.id }}" data-plan="{{ plan.plan }}" data-amount="{{ plan.amount }}">Pay Now</button>
@@ -61,7 +62,13 @@
 			var amount = this.dataset.amount
 			console.log('paymentId:', paymentId, 'amount:', amount, 'plan:', plan)
 			//paypalPayment(amount)
-			submitData(paymentId, amount);
+			
+			if (user == ''){
+				noneUser();
+				console.log('user')
+			}else{
+				submitData(paymentId, amount);
+			}
 		}
 		)
 	}
@@ -110,6 +117,12 @@
 			
 		})
 	}
+	
+	function noneUser(){
+		alert('You need to login to make payment');
+		window.location.href = '{% url 'login' %}'
+	}
+		
 	
 			
 		

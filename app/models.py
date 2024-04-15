@@ -48,7 +48,7 @@ class FAQ(models.Model):
         
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
 
     def __str__(self):
         return self.user.username
@@ -60,12 +60,6 @@ class Profile(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
         img.save(self.image.path)
-    
-class PaymentFeature(models.Model):
-    feature = models.CharField(max_length=150)
-
-    def __str__(self):
-        return self.feature
 
 class Payment(models.Model):
     PLAN = (
@@ -78,10 +72,16 @@ class Payment(models.Model):
     plan = models.CharField(max_length=100, choices=PLAN, null=True, blank=True)
     description = models.TextField(blank=True)
     credit = models.PositiveIntegerField(default=25)
-    feature = models.ForeignKey(PaymentFeature, default=None, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_features")
 
     def __str__(self):
         return str(self.plan)
+
+class PaymentFeature(models.Model):
+    feature = models.CharField(max_length=150)
+    payment = models.ForeignKey(Payment, default=None, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_plan")
+
+    def __str__(self):
+        return self.feature
 
 class CustomerPayment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
