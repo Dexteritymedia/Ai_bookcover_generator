@@ -43,8 +43,9 @@ def home(request):
     page_number = request.GET.get('page', 1)
     paginator = Paginator(HomePage.objects.all(), 1)
     page_obj = paginator.get_page(page_number)
+    faqs = FAQ.objects.all
 
-    return render(request, 'app/home.html', {'page_obj': page_obj})
+    return render(request, 'app/home.html', {'page_obj': page_obj, 'faqs':faqs})
 
 def signup(request):
     if request.method == 'POST':

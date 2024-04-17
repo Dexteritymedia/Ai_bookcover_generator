@@ -4,11 +4,13 @@
 
 {% block content %}
 <div id="articles">
+    <div class="container">
+    <div class="row">
+    <div class="col-12 mx-5 text-center">
     <div class="row">
 {% for article in page_obj %}
 
 	<div class="col-6 article">
-        <h2>{{ article.prompt }}</h2>
             <img class="img-fluid" src="{{ article.book_cover.url }}" alt="A sample image"/>
 </div>
 
@@ -18,9 +20,35 @@
               hx-target="#load-more" hx-select=".article" hx-swap="outerHTML"
               hx-trigger="load delay:3s">Load more</button>
      {% endif %}
- </div
+ </div>
  {% endfor %}
 </div>
 </div>
+</div>
+</div>
+</div>
+
+{% if faqs %}
+<div class="row text-align">
+
+<div class="accordion mt-5" id="accordionExample">
+	<h2>Frequently asked questions?</h2>
+{% for faq in faqs %}
+		<div class="accordion-item">
+			<h2 class="accordion-header" id="headingOne">
+			<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-controls="collapseOne">
+			{{faq.question}}
+			</button>
+			</h2>
+		<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+			<div class="accordion-body">
+				{{faq.answer}}
+			</div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
 
 {% endblock content %}
