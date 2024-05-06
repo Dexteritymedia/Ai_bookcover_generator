@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+
+{% block title %}
+404
+{% endblock title %}
+
+{% block content %}
+<div class="row">
+	<div class="col-12 text-center">
+		<h1>Page not found</h1>
+		<a class="btn btn-outline-success" href="{% url 'home' %}" class="nav-item nav-link">Go back to homepage</a>
+	</div>
+</div>
+{% endblock content %}
+

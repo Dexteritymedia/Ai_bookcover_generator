@@ -6,7 +6,7 @@
 {% block content %}
 <div class="row">
 
-<div class="col-lg-6 mb-3">
+<div class="col-md-6 mb-3">
 <form method="POST">
 {% csrf_token %}
 	{% if form.errors %}
@@ -30,13 +30,13 @@
 
 {% if cover %}
 
-<div class="col-lg-6 text-center">
+<div class="col-md-6 text-center">
 	<img src="{{ cover }}" class="img-fluid">
 	<a class="btn btn-success mt-3" href="{{ user_cover.cover_url }}" download>Download</a>
 	<a class="btn btn-danger mt-3" href="{% url 'cover-page' user.username %}">Go to Profile</a>
 </div>
 {% else %}
-<div class="col-lg-6">
+<div class="col-md-6">
 	<img src="{% static 'images/Image-Placeholder.png' %}" class="img-fluid">
 </div>
 {% endif %}

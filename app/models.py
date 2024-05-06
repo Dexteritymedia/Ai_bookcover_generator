@@ -43,7 +43,7 @@ class FAQ(models.Model):
     question_no = models.PositiveIntegerField()
 
     def __str__(self):
-        return str(self.id)
+        return self.question
 
         
 class Profile(models.Model):
@@ -76,9 +76,13 @@ class Payment(models.Model):
     def __str__(self):
         return str(self.plan)
 
+    def get_payment_features(self):
+        return self.payment_plan.all()
+
 class PaymentFeature(models.Model):
     feature = models.CharField(max_length=150)
-    payment = models.ForeignKey(Payment, default=None, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_plan")
+    payment = models.ManyToManyField(Payment, default=None, blank=True, related_name="payment_plan")
+    #payment = models.ForeignKey(Payment, default=None, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_plan")
 
     def __str__(self):
         return self.feature

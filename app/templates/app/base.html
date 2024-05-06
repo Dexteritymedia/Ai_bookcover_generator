@@ -1,4 +1,4 @@
-{% load static %}
+{% load static payment %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
 	
-    <title>{% block title %}{% endblock title %}- KindleCoverFactory</title>
+    <title>{% block title %}{% endblock title %}- {% current_title %}</title>
 	
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
@@ -77,8 +77,8 @@
 			<div class="container">
                 <div class="copyright">
                     <div class="row">
-                        <div class="col-md-6 text-center mb-3 mb-md-0">
-                            &copy; KindleCoverFactory<a class="border-bottom" href="/"></a>, {% now 'Y' %} All Right Reserved. 
+                        <div class="col-md-6 text-center mb-3 m-5 mb-md-0">
+                            &copy; KindleCoverFactory<a class="border-bottom mb-4" href="/"></a>, {% now 'Y' %} All Right Reserved. 
                         </div>
 					</div>
 				</div>

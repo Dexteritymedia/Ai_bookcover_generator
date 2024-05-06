@@ -12,16 +12,18 @@ from core.models import CustomUser
 class PaymentAdmin(admin.TabularInline):
     model = Payment
 
+"""
 class PaymentFeatureAdmin(admin.TabularInline):
     model = PaymentFeature
 
 class PaymentAdmin(admin.ModelAdmin):
    inlines = [PaymentFeatureAdmin,]
+"""
 
 class HomePageAdmin(admin.ModelAdmin):
     list_display = ['id', 'book_cover_img', 'cover_num']
 
-admin.site.register(Payment, PaymentAdmin)
+admin.site.register(Payment)
 admin.site.register(CustomerPayment)
 admin.site.register(CoverGenerator)
 admin.site.register(CustomUser)

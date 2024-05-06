@@ -8,6 +8,7 @@
 			<a href="{% url 'update-profile' %}">Update profile</a>
 		</div>
 		<div class="col-4">
+			<h1>Credits</h1>
 			<h1>{{user.user_credits}}</h1>
 		</div>
 		<div class="col-4">
@@ -30,7 +31,7 @@
 	</div>
 	{% else %}
 	<div class="mt-5 align-center justify-content-center">
-		<h4>You do not have any covers at the moment</h4>
+		<h4>You have not created any covers at the moment</h4>
 		<a href="{% url 'cover-generator-page' %}" class="btn btn-success">Generate Cover</a>
 	</div>
 	{% endif %}

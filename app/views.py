@@ -31,17 +31,13 @@ User = get_user_model()
 
 # Create your views here.
 
-def homepage(request):
-    context = {}
-    return render(request, 'app/seo/index.html', context)
-
 def home(request):
 
     """
     Fetch paginated articles and render them.
     """
     page_number = request.GET.get('page', 1)
-    paginator = Paginator(HomePage.objects.all(), 1)
+    paginator = Paginator(HomePage.objects.all().order_by('-cover_num'), 1)
     page_obj = paginator.get_page(page_number)
     faqs = FAQ.objects.all
 
@@ -68,7 +64,7 @@ def signup(request):
 def login_page(request):
     if request.user.is_authenticated:
         messages.info(request, 'Your are already logged in')
-        return redirect('homepage')
+        return redirect('home')
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -78,7 +74,7 @@ def login_page(request):
             if 'next' in request.POST:
                 return redirect(request.POST.get('next'))
             else:
-                return redirect("homepage")
+                return redirect("home")
             messages.success(request, f"Welcome {username}!")
         else:
             messages.warning(request, "Invalid credentials! Username or Password is incorrect. Please enter the correct username and password.")
@@ -87,7 +83,7 @@ def login_page(request):
 def logout_page(request):
     logout(request)
     messages.info(request, "Logged out successfully!")
-    return redirect("homepage")
+    return redirect("home")
 
 
 def update_profile(request):
@@ -111,12 +107,35 @@ def update_profile(request):
 
 def payment_page(request):
     payment_plans = Payment.objects.all()[:3]
-    #print(payment_plans.payment_set.all())
+    payment_features = []
+    
+    for feature in payment_plans:
+        payment_feature = feature.get_payment_features()
+        payment_features.append(payment_feature)
+        
     print(request.user.username)
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
         print(user.email)
-    return render(request, 'app/paypal_payment_page.html', {'payment_plans':payment_plans})
+        
+    plan_feature = []
+    plan_f = []
+    
+    for plan in payment_plans:
+        for feature in plan.payment_plan.all():
+            print(plan, feature)
+            plan_feature.append(plan)
+            plan_f.append(feature)
+        
+    print(plan_feature)
+    print(plan_f)
+    print(payment_features)
+    
+    return render(request, 'app/paypal_payment_page.html', {
+        'payment_plans':payment_plans,
+        'plan_features': zip(payment_plans, payment_features)
+        }
+    )
 
 
 @csrf_exempt
@@ -194,7 +213,7 @@ def confirm_payment(request, pk):
 def payment_confirmation(request):
     return render(request, 'app/payment_confirmation_page.html')
 
-def make_payment(request, pk):
+def make_payment_backend(request, pk):
     #amount = Payment.objects.all().last()
     amount = Payment.objects.get(pk=pk)
     print(request.user.username)
@@ -367,4 +386,5 @@ def image_manipulation_page(request, slug, id):
         form = ImageManipulationForm()
     return render(request, 'app/image_manipulation_page.html', {'form': form, 'content':page})
 
-    
+def page_not_found_view(request, exception):
+    return(request, 'app/404.html',)

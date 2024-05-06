@@ -49,7 +49,7 @@ class ImageManipulationForm(forms.Form):
         ('Roboto', 'Roboto'),
         ('ZCOOL', 'ZCOOL'),
     )
-    font_type = forms.ChoiceField(choices = FONT_CHOICES)
+    font_type = forms.ChoiceField(label=" Font Type", choices = FONT_CHOICES)
     font_size = forms.IntegerField(label=" Font Size",widget=forms.NumberInput(attrs={"class":"form-control"}))
     color = forms.CharField(label=" Color",widget=forms.TextInput(attrs={"type": "color", "class":"form-control"}))
     text = forms.CharField(label="Text",widget=forms.TextInput(attrs={"class":"form-control"}))
