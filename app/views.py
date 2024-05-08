@@ -37,11 +37,12 @@ def home(request):
     Fetch paginated articles and render them.
     """
     page_number = request.GET.get('page', 1)
-    paginator = Paginator(HomePage.objects.all().order_by('-cover_num'), 1)
+    page_contents = HomePage.objects.all().order_by('-cover_num')
+    paginator = Paginator(page_contents, 1)
     page_obj = paginator.get_page(page_number)
     faqs = FAQ.objects.all
 
-    return render(request, 'app/home.html', {'page_obj': page_obj, 'faqs':faqs})
+    return render(request, 'app/home.html', {'page_contents': page_contents, 'page_obj': page_obj, 'faqs':faqs})
 
 def signup(request):
     if request.method == 'POST':

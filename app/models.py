@@ -18,8 +18,11 @@ class HomePage(models.Model):
     prompt = models.TextField()
     cover_num = models.PositiveIntegerField()
 
+    class Meta:
+        verbose_name_plural = 'Homepage'
+
     def __str__(self):
-        return str(self.id)
+        return f'{self.prompt[:50]}...'
 
     def book_cover_img(self):
         if self.book_cover:
@@ -30,10 +33,15 @@ class HomePage(models.Model):
 
     def save(self, *args, **kwargs):
         import urllib, os
-        
-        url = 'https://replicate.delivery/mgxm/59d9390c-b415-47e0-a907-f81b0d9920f1/187400315-87a90ac9-d231-45d6-b377-38702bd1838f.jpg'
-        result = urllib.request.urlretrieve(url)
-        self.book_cover.save(os.path.basename(url), File(open(result[0], 'rb')), save=False)
+        if self.book_cover == '':
+            
+            #url = 'https://replicate.delivery/mgxm/59d9390c-b415-47e0-a907-f81b0d9920f1/187400315-87a90ac9-d231-45d6-b377-38702bd1838f.jpg'
+            #url = 'https://tjzk.replicate.delivery/models_models_cover_image/61004930-fb88-4e09-9bd4-74fd8b4aa677/sdxl_cover.png'
+            #url = 'https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png'
+            url = 'https://replicate.delivery/pbxt/Lca3IEjcKoJBBVS6ajROkK37sDzPsmjYxIcFzxPZp65wZzTE/out-0.png'
+            result = urllib.request.urlretrieve(url)
+            print(result)
+            self.book_cover.save(os.path.basename(url), File(open(result[0], 'rb')), save=False)
         super(HomePage, self).save(*args, **kwargs)
 
 

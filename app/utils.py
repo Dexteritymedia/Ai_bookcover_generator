@@ -67,7 +67,19 @@ def resize_cover(img):
         }
     )
     return output
+
 """
+
+output = replicate.run(
+  "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+  input={
+    "prompt": "An astronaut riding a rainbow unicorn, cinematic, dramatic"
+  }
+)
+
+print(output)
+
+
 def process_payment(name,email,amount,phone):
     auth_token= env('SECRET_KEY')
     header = {'Authorization': 'Bearer ' + auth_token}

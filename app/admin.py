@@ -21,7 +21,7 @@ class PaymentAdmin(admin.ModelAdmin):
 """
 
 class HomePageAdmin(admin.ModelAdmin):
-    list_display = ['id', 'book_cover_img', 'cover_num']
+    list_display = ['__str__', 'book_cover_img', 'cover_num']
 
 admin.site.register(Payment)
 admin.site.register(CustomerPayment)
