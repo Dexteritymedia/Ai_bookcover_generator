@@ -1,5 +1,16 @@
 {% extends 'app/base.html' %}
 
+{% block css %}
+<style>
+.bg-custom-color {
+    /*background-image: linear-gradient(to right, red , yellow);
+	background-image: linear-gradient(red , yellow);*/
+	background-image: radial-gradient(blue , white);
+	background-image: linear-gradient(blue , white);
+}
+</style>
+{% endblock css %}
+
 {% block content %}
 {% comment %}
 	<div class="row align-center justify-content-center">
@@ -21,28 +32,46 @@
    </div>  
 {% endcomment %} 
   
-<div class="row">
+  
+  <div class="row text-center">
+  <h1>Plans that Unleash the Wow in Your Photos</h1>
+<h4>Choose the right plan for you and elevate your photos with the power
+of AI without any limitations.</h4>
+</div>
+<div class="row my-3 mb-5 row-cols-1 row-cols-md-3 g-4">
 {% for plan, feature in plan_features %}
-
-		<div class="col-lg-4 col-md-6 mb-3" data-wow-delay="0.1s">
-			<div class="service-item d-flex flex-column justify-content-center text-center rounded border-primary">
-				<h1 class="mb-3">${{ plan.amount|floatformat:2 }}</h1>
-				<h4 class="mb-3">{{ plan.credit }}/{{ plan.plan|title }}</h4>
-				<div>
+		
+  <div class="col">
+  <div class="shadow bg-body rounded">
+    <div class="card bg-custom-color mb-3">
+      <div class="card-body">
+		{% if plan.plan %}
+		<h4 class="card-title">{{ plan.plan|title }}</h4>
+		{% endif %}
+        <h1 class="card-title">${{ plan.amount|floatformat:2 }}</h1>
+		{% if plan.description %}
+		<p style="color: #000;">{{plan.description}}</p>
+		{% endif %}
+		{% if plan.credit %}
+        <h4 class="card-text"><mark>{{ plan.credit }}</mark> credits</h4>
+		{% endif %}
+		<button type="submit" class="text-center btn btn-warning m-3 payment-plan" data-id= "{{ plan.id }}" data-plan="{{ plan.plan }}" data-amount="{{ plan.amount }}">Pay Now</button>
+		<div style="color: #000;">
 					{% for f in feature %}
-						<small>{{ f.feature }}</small>
-						<hr style="dotted: 20px;"/>
+					<span>&#10003;</span>
+						<small class=" mx-2 mb-5"> {{ f.feature }}</small>
+						<p></p>
 					{% endfor %}
 				</div>
-				<button type="submit" class="btn btn-success payment-plan" data-id= "{{ plan.id }}" data-plan="{{ plan.plan }}" data-amount="{{ plan.amount }}">Pay Now</button>
-				<div ></div>
-				<div id="smart-button-container">
+      </div>
+    </div>
+    </div>
+	<div id="smart-button-container">
           <div style="text-align: center;">
             <div id="paypal-button-container"></div>
           </div>
         </div>
-            </div>
-        </div>
+  </div>
 
 {% endfor %}    
  </div> 

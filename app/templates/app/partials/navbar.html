@@ -24,12 +24,12 @@
 						{% endcomment %}
 						{% get_amount %}
                     </div>
-					<a href="{% url 'cover-generator-page' %}" class=" nav-item nav-link btn btn-success text-light rounded-pill py-2 px-4 ms-3">Generate Cover</a>
+					<a href="{% url 'cover-generator-page' %}" class=" nav-item nav-link btn btn-success text-light rounded-pill py-2 px-4 ms-3">Get Cover</a>
 					{% if user.is_authenticated %}
 						<a href="{% url 'logout' %}" class="nav-item nav-link" style="color: red;">Logout</a>
 					{% else %}
-						<a href="{% url 'signup' %}" class="btn btn-secondary text-light rounded-pill py-2 px-4 ms-3">Sign up</a>
-						<a href="{% url 'login' %}" class="btn btn-success text-light rounded-pill py-2 px-4 ms-3">Login</a>
+						<a href="{% url 'signup' %}" class="btn btn-secondary text-light rounded-pill py-2 px-4 ms-3 mt-3">Sign up</a>
+						<a href="{% url 'login' %}" class="btn btn-info text-light rounded-pill py-2 px-4 ms-3 mt-3">Login</a>
 					{% endif %}
              
                 </div>
